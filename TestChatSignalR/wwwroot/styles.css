@@ -1,0 +1,87 @@
+﻿
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    padding: 20px;
+}
+
+#login, #chat {
+    text-align: center;
+    background: #b6bee4;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    width: 350px;
+}
+
+#chat {
+    display: none; /* скрыт до входа */
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #637cf2;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    button:hover {
+        background-color: #3c55ca;
+    }
+
+/* Контейнер сообщений */
+#messages {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    background-color: #8998e6;
+    border-radius: 10px;
+}
+
+.message {
+    max-width: 80%;
+    word-wrap: break-word;
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.4;
+    box-shadow: 0 1px 2px #ccc;
+}
+
+/* Выравнивание влево/вправо */
+.from-self {
+    align-self: flex-end;
+    background-color: #dcf8c6;  /*зелёный фон, как у отправителя */
+    text-align: right;
+}
+
+.from-others {
+    align-self: flex-start;
+    background-color: #fff;
+    text-align: left;
+}
