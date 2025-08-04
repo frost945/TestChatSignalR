@@ -10,9 +10,7 @@
 *.userosscache
 *.sln.docstates
 
-#config
-appsettings.*.json
-appsettings.json
+# txt files
 *.txt
 
 #git

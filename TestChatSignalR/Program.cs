@@ -18,7 +18,17 @@ namespace TestChatSignalR
 
             builder.Services.AddSignalR();
 
-            WebApplication app = builder.Build();         
+            WebApplication app = builder.Build();
+
+            string environmentName = app.Environment.EnvironmentName;
+            Console.WriteLine($"Environment: {environmentName}");
+
+            //Автоматическое применение миграций
+            using (var scope = app.Services.CreateScope())
+            {
+                ChatDbContext db = scope.ServiceProvider.GetRequiredService<ChatDbContext>();
+                db.Database.Migrate();
+            }
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
@@ -26,6 +36,10 @@ namespace TestChatSignalR
             app.UseRouting();
 
             app.MapHub<ChatHub>("/chat");
+
+            app.MapGet("/ping", () => "API is running"); //проверка работы API
+
+            app.MapFallbackToFile("index.html");
 
             await app.RunAsync();
         }

@@ -1,0 +1,31 @@
+services:
+  chat-db:
+    build:
+      context: ./db
+    environment:
+      - SA_PASSWORD=StrongPass123!
+      - ACCEPT_EULA=Y
+    ports:
+      - "1433:1433"
+    volumes:
+      - chatdb_data:/var/opt/mssql 
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/1433"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  chat-app:
+    build:
+      context: .
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5000
+    ports:
+      - "5000:5000"
+    depends_on:
+      chat-db:
+        condition: service_healthy
+
+volumes:
+  chatdb_data:
