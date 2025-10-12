@@ -1,10 +1,8 @@
 Онлайн Чат
 
-Демонстрация в реальном времени: https://testchatsignalr2607-hxa4g4h0h4gvg2gk.canadacentral-01.azurewebsites.net/
-
 Технологии:
 Backend: ASP.NET Core, EF Core, MS SQL + SignalR;
-Frontend: HTML, CSS, JavaScript;
+Frontend: JavaScript, HTML, CSS;
 
 Функции:
  - обмен сообщениями в реальном времени (SignalR)
