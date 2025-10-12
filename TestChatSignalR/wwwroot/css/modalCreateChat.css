@@ -1,0 +1,97 @@
+﻿/*окно для создания чата*/
+/* Модальное окно скрыто по умолчанию */
+.modal {
+    display: none;
+    position: fixed;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    opacity: 0; /* изначально прозрачная */
+    transition: opacity 0.3s ease;
+}
+
+    .modal.show {
+        display: flex; /*чтобы окно появлялось по центру*/
+        opacity: 1;
+    }
+
+/* Контент модалки */
+.modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    width: 400px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+/* чтобы эти два элемента были в одной линии */
+#createChatModal input[type="text"], #createChatModal label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#createChatModal input[type="text"] {
+    width: 200px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+}
+/*дополнение чтобы кнопка была шире*/
+#submitChatBtn {
+    width: 40%;
+}
+/* Крестик закрытия */
+.close-modal {
+    float: right;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+/*dark-mode*/
+.dark-mode .modal-content {
+    background: #1f1f2e;
+    color: #f1f1f1;
+    box-shadow: 0 0 20px rgba(255, 105, 180, 0.3), 0 0 30px rgba(120, 80, 255, 0.2);
+    border: 1px solid rgba(255, 105, 180, 0.3);
+}
+
+.dark-mode #createChatModal input[type="text"] {
+    background: #2b2b3d;
+    color: #f1f1f1;
+    border: 1px solid #555;
+    box-shadow: inset 0 0 8px rgba(255, 105, 180, 0.2);
+}
+
+    .dark-mode #createChatModal input[type="text"]:focus {
+        outline: none;
+        border-color: #ff69b4;
+        box-shadow: 0 0 8px #ff69b4;
+    }
+
+.dark-mode #submitChatBtn, .dark-mode #submitUserBtn {
+    background: linear-gradient(135deg, #bb0d64, #5b2a86);
+    color: #fff;
+}
+
+    .dark-mode #submitChatBtn:hover, .dark-mode #submitUserBtn:hover {
+        background: linear-gradient(135deg, #e01277, #7030a0);
+        box-shadow: 0 0 18px rgba(255, 105, 180, 0.3), 0 0 25px rgba(120, 80, 255, 0.3);
+    }
+
+.dark-mode .close {
+    color: #e86eab;
+    text-shadow: 0 0 8px rgba(255, 105, 180, 0.4);
+}
+
+    .dark-mode .close:hover {
+        color: #ff69b4;
+        text-shadow: 0 0 12px rgba(255, 105, 180, 0.7), 0 0 20px rgba(120, 80, 255, 0.5);
+    }

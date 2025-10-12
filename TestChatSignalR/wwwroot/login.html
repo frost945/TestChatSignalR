@@ -1,0 +1,50 @@
+﻿
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Онлайн-чат SignalR</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/general.css" />
+    <link rel="stylesheet" href="/css/modalCreateChat.css" />
+
+    <link rel="shortcut icon" href="img/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    
+
+</head>
+<body>
+    <div id="login">
+        <h3>Авторизация</h3>
+        <form>
+            <input type="email" id="email" class="input" placeholder="Почта" />
+            <input type="password" id="password" class="input" placeholder="Пароль" />
+            <button type="button" onclick="login()" id="login-button">Войти</button>
+            <p>Нет аккаунта? <button type="button" id="regUserBtn">Зарегистрироваться</button><p>
+        </form>
+    </div>
+
+    <!--Модальное окно регистрации-->
+    <div id="regUserModal" class="modal">
+        <div class="modal-content">
+            <span id="closeModal" class="close">&times;</span>
+            <h3>Регистрация</h3>
+            <form>
+                <input type="text" id="username" class="input" placeholder="Имя пользователя" />
+                <input type="text" id="newEmail" class="input" placeholder="Почта" /> <!--поствил type=text вместо email чтобы браузер не выдавал предупреждений-->
+                <input type="password" id="newPassword" class="input" placeholder="Пароль" />
+                <button id="submitUserBtn" class="system-button">Регистрация</button>
+            </form>
+        </div>
+    </div>
+
+    <button id="switchTheme-button" onclick="switchTheme()">
+        <span class="slider"></span>
+    </button>
+
+    <script src="/js/login.js"></script>
+    <script src="/js/switchTheme.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+</body>
+</html>

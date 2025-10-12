@@ -1,0 +1,498 @@
+﻿
+:root {
+    /* --body-color: linear-gradient(135deg, #4d68e0 0%, #60318f 100%);*/
+    --body-color: linear-gradient(135deg, #2e3266, #4b3f72, #6a397b);
+
+    --bg-login: #d7dcf2;
+    --box-shadow-login: 0 8px 20px rgba(0,0,0,0.25);
+    --color-login: black;
+
+    --bg-login-input: white;
+    --color-loginInput: black;
+    --border-login-input: 1px solid #ccc;
+    --borderColor-loginInput-focus: #637cf2;
+    --shadow-loginInput-focus: 0 0 8px #637cf2;
+
+    --bgColor-login-button: #637cf2;
+    --bgColor-loginButton-hover: #3c55ca;
+    --shadow-loginButton-hover: none;
+
+    --bgColor-switchTheme-button: #bbb7b7;
+    --bg-slider: #6638db;
+    
+    --color-a: #637cf2;
+    --color-a-hover: #454eaa;
+}
+
+/* Тёмная тема */
+.dark-mode {
+    --body-color: #1c1f3a;
+    /*--body-color: linear-gradient(135deg, #0f0c29, #302b63, #24243e);*/
+
+    --bg-login: #1f1f2e;
+    --box-shadow-login: 0 0 20px rgba(255, 105, 180, 0.4); /* розовый glow*/
+    --color-login: #f1f1f1;
+
+    --bg-login-input: #2b2b3d;
+    --color-loginInput: #f1f1f1;
+    --border-login-input: 1px solid #555;
+    --shadow-login-input: inset 0 0 8px rgba(255, 105, 180, 0.2);
+    --borderColor-loginInput-focus: #ff69b4;
+    --shadow-loginInput-focus: 0 0 8px #ff69b4;
+
+    --bgColor-login-button: #40324f;
+    --bgColor-loginButton-hover: #dd2882;
+    --shadow-loginButton-hover: 0 0 15px rgba(255, 105, 180, 0.6);
+
+    --bgColor-switchTheme-button: #444;
+    --bg-slider:  #e86eab; /* розовый */
+
+    --color-a: #9aa4ff;
+    --color-a-hover: #ff85c1;
+}
+
+/*страница login*/
+#login {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: var(--bg-login);
+    border-radius: 12px;
+    padding: 30px 20px;
+    box-shadow: var(--box-shadow-login);
+    width: 400px;
+    color: var(--color-login);
+}
+
+.input {
+    width: 75%;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    border: var(--border-login-input);
+    box-sizing: border-box;
+    color: var(--color-loginInput);
+    background-color: var(--bg-login-input);
+    box-shadow: var(--shadow-login-input);
+}
+     .input:focus{
+        outline: none;
+        border-color: var(--borderColor-loginInput-focus);
+        box-shadow: var(--shadow-loginInput-focus);
+    }
+
+/*устанавливаем свои значения при автозаполнении*/
+#email:-webkit-autofill,
+#password:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px white inset;
+}
+
+#email:-webkit-autofill:focus,
+#password:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px white inset;
+}
+/*устанавливаем свои значения при автозаполнении в тёмной теме*/
+.dark-mode #email:-webkit-autofill,
+.dark-mode #password:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px #2b2b3d inset;
+    -webkit-text-fill-color: var(--color-loginInput); /* ваш цвет текста */
+    border: var(--border-login-input); /* ваша граница */
+    caret-color: var(--color-loginInput);
+}
+    .dark-mode #email:-webkit-autofill:focus,
+    .dark-mode #password:-webkit-autofill:focus {
+        outline: none;
+        border-color: var(--borderColor-loginInput-focus);
+        -webkit-box-shadow: 0 0 0px 1000px #2b2b3d inset, var(--shadow-loginInput-focus) !important;
+        caret-color: var(--color-loginInput);
+    }
+
+    #login-button {
+        width: 75%;
+        padding: 10px;
+        margin-top: 15px;
+        border: none;
+        border-radius: 5px;
+        background-color: var(--bgColor-login-button);
+        color: #fff;
+        font-weight: bold;
+        font-size: 15px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+
+    #login-button:hover, #sendMessage-button:hover {
+        background-color: var(--bgColor-loginButton-hover);
+        box-shadow: var(--shadow-loginButton-hover);
+    }
+    #login-button:focus {
+        outline: none;
+        box-shadow: var(--shadow-loginInput-focus);
+        background-color: var(--bgColor-loginButton-hover);
+    }
+
+#regUserBtn {
+    font-size: 16px;
+    color: var(--color-a);
+    background: none;
+    border: none;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+    #regUserBtn:hover {
+        color: var(--color-a-hover);
+    }
+
+
+/*страница chat*/
+/* Dark Mode для страницы чата */
+.dark-mode #chat {
+    background: #1f1f2e;
+    border: 1px solid #a36382;
+    box-shadow: 0 0 20px rgba(255, 105, 180, 0.25);
+    color: #f1f1f1;
+}
+
+/* Контейнер сообщений */
+.dark-mode #messages {
+    background: #403852;
+    border: 1px solid #3a2b55;
+    box-shadow: inset 0 0 12px rgba(255, 105, 180, 0.15);
+}
+
+/* Сообщения */
+.dark-mode .message {
+    color: #fff;
+}
+
+/* Свои сообщения */
+.dark-mode .from-self {
+    background-color: #bb0d64;
+}
+
+/* Чужие сообщения */
+.dark-mode .from-others {
+    background: #2e2e3f;
+}
+
+/* Системные */
+.dark-mode .system-message {
+    background: transparent;
+    border:  1px solid #b44a7e;
+}
+
+/* Кнопка "Назад" */
+.dark-mode .back-button {
+    background: #bb0d64;
+    color: #fff;
+}
+
+    .dark-mode .back-button:hover {
+        background: #e01277;
+    }
+
+
+
+/* Контейнер сообщений */
+#messages {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    height: 70vh; /* 60% от высоты окна браузера */
+    //max-height: 700px;
+    width: 100%;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+   // margin-top: 15px;
+    //margin-bottom: 10px;
+    background-color: #8998e6;
+    border-radius: 10px;
+}
+
+.message {
+    max-width: 80%;
+    word-wrap: break-word;
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+#sendMessage-button {
+    width: 75%;
+    padding: 10px;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--bgColor-login-button);
+    color: #fff;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* Выравнивание влево/вправо */
+.from-self {
+    align-self: flex-end;
+    background-color: #dcf8c6; /*зелёный фон, как у отправителя */
+    text-align: right;
+}
+
+.from-others {
+    align-self: flex-start;
+    background-color: #fff;
+    text-align: left;
+}
+.system-message {
+    align-self: center;
+    background-color: #f0f0f0;
+    font-style: italic;
+    color: black;
+    border: none;
+}
+
+.back-button {
+    position: absolute; /* можно убрать, если не нужно фиксировать */
+    top: 20px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%; /* делает круг */
+    background-color: #454eaa;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+    .back-button:hover {
+        background-color: #2e367d;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    }
+
+/*страница chats*/
+/* === DARK MODE (киберпанк стиль) === */
+
+/* Заголовки */
+.dark-mode .title {
+    color: #e86eab;
+}
+
+/* Блок с именем */
+.dark-mode .name {
+    border: 1px solid #ff69b4;
+    background-color: transparent;
+    color: #e86eab;
+}
+
+/* Контейнер чатов */
+.dark-mode #chats-container {
+    background: #1f1f2e;
+    box-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
+    color: #f1f1f1;
+    border: 1px solid #ff69b4;
+}
+/*.dark-mode #chats-list {
+    border: 1px solid #ff69b4;
+}*/
+
+/* Системные кнопки */
+.dark-mode .system-button {
+    background: #40324f;
+    color: #fff;
+    border: 1px solid #555;
+}
+
+    .dark-mode .system-button:hover {
+        background: #dd2882;
+        // box-shadow: 0 0 15px rgba(255, 105, 180, 0.6);
+    }
+
+/* Кнопки чатов */
+.dark-mode .chat-button {
+    background: #40324f;
+    color: #fff;
+    border: 1px solid #555;
+}
+
+    .dark-mode .chat-button:hover {
+        background: #dd2882;
+        box-shadow: 0 0 15px rgba(255, 105, 180, 0.6);
+    }
+
+.dark-mode .active-chatButton {
+    background: #dd2882;
+    border: none;
+   //border: 1px solid #ff69b4;
+}
+
+/* Сообщение об отсутствии чатов */
+.dark-mode .no-chats {
+    color: #bbb;
+    font-style: italic;
+    text-shadow: 0 0 8px rgba(255, 105, 180, 0.2);
+}
+
+
+
+/*дневная тема*/
+/* страница chats */
+.title {
+    font-size: 24px;
+    color: #454eaa;
+    text-align: center;
+}
+
+.name {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-weight: bold;
+    padding: 8px 16px;
+    border: 2px solid #454eaa;
+    border-radius: 8px;
+    color: #454eaa;
+    font-size: 20px;
+}
+
+/* Стили для контейнера чатов */
+#chats-container {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    height: calc(100vh - 40px);
+    width: 100%;
+    max-width: 1600px;
+    margin: 30px auto;
+    overflow-x: auto;
+    gap: 10px;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    background-color: #d7dcf2;
+    border-radius: 16px;
+    box-shadow: 8px 7px 20px 8px rgba(0, 0, 0, 0.17);
+    padding: 15px 5px 15px; /* добавил отступ сверху */
+}
+
+#chats-list {
+    flex: 1 1 200px; /* растягивается, но не меньше 250px */
+    min-width: 200px;
+    max-width: 250px;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    align-items: center;
+    gap: 8px;
+   // height: 100%;
+    margin-top: 70px;
+    overflow-y: auto; /*чтобы добавился скролл*/
+}
+
+#chat {
+    flex: 2 1 400px;
+    max-width: 600px;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 2px solid #454eaa;
+    border-radius: 12px;
+    padding: 10px 25px;
+    background-color: #d7dcf2;
+    opacity: 0;
+   //visibility: hidden;
+}
+    #chat.show {
+       // visibility: visible;
+        opacity: 1;
+        transition: opacity 0.3s ease-in;
+    }
+    #systemButton-list {
+    flex: 1 1 200px;
+    min-width: 150px;
+    max-width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 70px;
+}
+
+
+/* Кнопки управления в меню чатов */
+.system-button {
+    padding: 12px;
+    margin: 5px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    background-color: #7586e1;
+    color: white;
+    transition: all 0.3s ease;
+}
+    .system-button:hover {
+        background-color: #5a6ed1;
+    }
+
+/* Стили для кнопок чатов */
+.chat-button {
+    position: relative;
+    text-align: center;
+    color: white;
+    padding: 16px;
+    width: 200px;
+    margin: 6px auto;
+    font-size: 16px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.chat-button:hover {
+    background: linear-gradient(135deg, #4b5cd1 0%, #5b3684 100%);
+    box-shadow: 0 4px 12px #0f2178;
+}
+
+.active-chatButton {
+    background: linear-gradient(135deg, #4b5cd1 0%, #5b3684 100%);
+}
+
+/* Красная точка для непрочитанного сообщения */
+.chat-button.unread::after {
+    content: "";
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    width: 12px;
+    height: 12px;
+    background-color: red;
+    border: 2px solid white; /* чтобы выглядело опрятно */
+    border-radius: 50%;
+}
+
+/* Сообщение об отсутствии чатов */
+.no-chats {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    padding: 40px;
+    font-size: 16px;
+}
+

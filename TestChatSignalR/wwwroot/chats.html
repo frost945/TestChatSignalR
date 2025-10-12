@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Мои чаты</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/general.css" />
+    <link rel="stylesheet" href="/css/modalCreateChat.css" />
+</head>
+<body>
+    <div id="chats-container">
+        <div id="userName" class="name"></div>
+        <div id="chats-list"></div>
+
+        <div id="chat">
+            <h3 id="chat-title" class="title"></h3>
+            <!-- <button onclick="history.back()" class="back-button">←</button>-->
+            <div id="messages"></div>
+            <input type="text" id="messageInput" class="input" placeholder="Введите сообщение..." />
+            <button onclick="sendMessage()" id="sendMessage-button">Отправить</button>
+        </div>
+
+        <!-- Модальное окно создание чата -->
+        <div id="createChatModal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h3>Создать новый чат</h3>
+                <input type="text" class="input" id="chatNameInput" placeholder="Название чата" />
+                <label>
+                    <input type="checkbox" id="isGroupCheckbox" /> Групповой чат
+                </label>
+                <button id="submitChatBtn" class="system-button">Создать</button>
+            </div>
+        </div>
+
+        <!-- Модальное окно поиск чата -->
+        <div id="findChatModal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h3>Найти чат</h3>
+                <input type="text" class="input" id="findChatNameInput" placeholder="Название чата" />
+                <button id="searchChatBtn" class="system-button">поиск</button>
+            </div>
+        </div>
+
+        <div id="systemButton-list" class="list">
+            <!-- Кнопка для создания чата -->
+            <button id="createChatBtn" class="system-button">Создать чат</button>
+            <!-- Кнопка для поиска чатов -->
+            <button id="findChatBtn" class="system-button">Поиск</button>
+            <!-- Кнопка для выхода -->
+            <button onclick="logout()" class="system-button">Выйти</button>
+        </div>
+
+        <!--кнопка переключения темы-->
+        <button id="switchTheme-button" onclick="switchTheme()">
+            <span class="slider"></span>
+        </button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script src="/js/chats.js"></script>
+    <script src="/js/switchTheme.js"></script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+﻿/* Общий стиль ссылок */
+a {
+    color: var(--color-a);
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+    a:hover {
+        color: var(--color-a-hover);
+    }
+
+body {
+    background: var(--body-color);
+    height: 100vh; /* растягиваем на всю высоту */
+    overflow: hidden;
+}
+
+/* Переключатель темы */
+#switchTheme-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 60px;
+    height: 30px;
+    border-radius: 30px;
+    border: none;
+    background: var(--bgColor-switchTheme-button);
+    cursor: pointer;
+    transition: background 0.3s ease;
+    padding: 0;
+}
+
+/* кружок*/
+.slider {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--bg-slider);
+    transition: transform 0.3s ease;
+}
+
+.dark-mode .slider {
+    transform: translateX(30px);
+}
+
+/*scroll*/
+/* ===== Светлая тема (по умолчанию) ===== */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1; /* светлый фон дорожки */
+}
+
+::-webkit-scrollbar-thumb {
+    background: #aaa; /* серый ползунок */
+    border-radius: 8px;
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #888; /* темнее при наведении */
+    }
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #aaa #f1f1f1;
+}
+
+/* ===== Тёмная тема (dark-mode) ===== */
+.dark-mode ::-webkit-scrollbar-track {
+    background: #1f1f2e; /* тёмный фон дорожки */
+}
+
+.dark-mode ::-webkit-scrollbar-thumb {
+    background: #555; /* тёмный ползунок */
+}
+
+    .dark-mode ::-webkit-scrollbar-thumb:hover {
+        background: #888; /* светлее при наведении */
+    }
+
+/* Firefox для dark-mode */
+.dark-mode * {
+    scrollbar-color: #555 #1f1f2e;
+}
