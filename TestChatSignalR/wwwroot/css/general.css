@@ -10,6 +10,12 @@ a {
         color: var(--color-a-hover);
     }
 
+/* Общий стиль кнопок */
+.dark-mode button:focus {
+    outline: none;
+    border: 1px solid #ff69b4;
+}
+
 body {
     background: var(--body-color);
     height: 100vh; /* растягиваем на всю высоту */

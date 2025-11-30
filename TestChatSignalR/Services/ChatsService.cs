@@ -19,7 +19,11 @@ namespace TestChatSignalR.Services
         }
         public async Task<IEnumerable<Chat>> GetChatsByUserId(int userId)
         {
-            return await _chatsRepository.GetByUserId(userId);
+            try{ return await _chatsRepository.GetByUserId(userId); }
+            catch (InvalidOperationException ex)
+            {
+                throw new InvalidOperationException($"Chats not found", ex);
+            }
         }
 
         public async Task<Chat> GetChatByIdAsync(int chatId)
@@ -31,11 +35,11 @@ namespace TestChatSignalR.Services
             }
             catch (InvalidOperationException ex)
             {
-                throw new KeyNotFoundException($"Chat with chatId {chatId} not found.", ex);
+                throw new InvalidOperationException($"Chat not found.", ex);
             }
         }
 
-        public async Task<Chat> GetChatByNameAsync(string chatName)
+       /* public async Task<Chat> GetChatByNameAsync(string chatName)
         {
             try
             {
@@ -46,29 +50,14 @@ namespace TestChatSignalR.Services
             {
                 throw new KeyNotFoundException($"Chat with name {chatName} not found.", ex);
             }
-        }
+        }*/
 
-        public async Task CreateChat(ChatRequest request)
+        public async Task<Chat> CreateChat(ChatRequest request)
         {
-            Chat chat = new Chat { Name = request.Name };
-
-            User user = await _usersRepository.GetByIdAsync(request.UserId);
-
-            // добавляем пользователя в чат, чтобы в таблице JoinUserChat была связь id чата и id пользователя
-            chat.Users.Add(user);
-
+            Chat chat = new Chat ( request.SenderId, request.ReceiverId );
             await _chatsRepository.Add(chat);
-        }
 
-        public async Task AddUserToChat(int chatId, int userId)
-        {
-            Console.WriteLine($"AddUserToChat on: chatID:{chatId}, userId{userId}");
-
-            Chat chat = await _chatsRepository.GetByIdAsync(chatId);
-            User user = await _usersRepository.GetByIdAsync(userId);
-            // добавляем пользователя в чат, чтобы в таблице JoinUserChat была связь id чата и id пользователя
-            chat.Users.Add(user);
-            await _dbContext.SaveChangesAsync();
+            return chat;
         }
     }
 }

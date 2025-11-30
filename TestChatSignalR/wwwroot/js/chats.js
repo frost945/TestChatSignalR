@@ -1,19 +1,17 @@
-﻿
-const userId = localStorage.getItem('authToken');
+﻿const userIdcon = localStorage.getItem('authToken');
 
 const connection = new signalR.HubConnectionBuilder()
-    .withUrl(`/chat?userId=${userId}`)
+    .withUrl(`/chat?userId=${userIdcon}`)
     .withAutomaticReconnect()
     .configureLogging(signalR.LogLevel.Information)
     .build();
 
 
 
-//получаем сообщение на клиенте что кто-то подключился к чату
-connection.on("ReceiveSystemMessage", (message, chatId) => {
-    //обновляем название чата
-    const currentChatName = document.getElementById("chat-title");
-    currentChatId = localStorage.getItem('currentChatId');
+//получаем сообщение на клиенте что кто-то подключился к чату, либо вышел из чата
+connection.on("ReceiveSystemMessage", (message, chatId) =>
+{
+    const currentChatId = localStorage.getItem('currentChatId');
 
     // Проверяем, что сообщение для текущего открытого чата
     if (chatId != currentChatId) {
@@ -22,76 +20,80 @@ connection.on("ReceiveSystemMessage", (message, chatId) => {
     }
 
     const msg = document.createElement("div");
-    msg.textContent = message;
+    msg.textContent =message;
     msg.classList.add("message");
     msg.classList.add("system-message");
     document.getElementById("messages").appendChild(msg);
+    
+    setTimeout(() => { msg.remove(); }, 3000);
 
     //прокрутка диалога вниз
     const messagesDiv = document.getElementById("messages");
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 });
 
+let isChatCreating = true;
+let pendingMessages = []; // буфер для сообщений, пришедших раньше чата
 //Получаем сообщение от usera на клиенте
-connection.on("ReceiveMessage", (userName, message, userId, chatId) => {
+connection.on("ReceiveMessage", (message, userId, chatId) =>
+{
     console.log("Получаем сообщение на клиенте");
-    console.log("user:", userName, "message:", message, "userId:", userId, "chatId:", chatId);
+    console.log("message:", message, "userId:", userId, "chatId:", chatId);
 
-    currentChatId = localStorage.getItem('currentChatId');
-    console.log("currentChatId перед непрочитанными смс:", currentChatId);
+    const currentChatId = localStorage.getItem('currentChatId');
+    console.log("ReceiveMessage ChatId перед непрочитанными смс:", currentChatId);
 
-    // Проверяем, что сообщение для текущего открытого чата
-    if (chatId != currentChatId || !currentChatId) {
-        console.log("Сообщение для другого чата, игнорируем");
-
-        // Помечаем чат как непрочитанный
-        const chatButton = document.getElementById(chatId);
-        chatButton.classList.add("unread");
-
-        return; // Не отображаем сообщение
+    // Если чат в процессе создания, сохраняем сообщение в буфер
+    if (isChatCreating) {
+        console.log("Чат создается, откладываем сообщение");
+        pendingMessages.push({ message, userId, chatId });
+        return;
     }
 
-    const msg = document.createElement("div");
-    msg.textContent = `${userName}: ${message}`;
-    msg.classList.add("message");
-
-    // Определяем, кто отправил сообщение
-    if (userId == currentUser) {
-        msg.classList.add("from-self");
-    } else {
-        msg.classList.add("from-others");
-    }
-
-    document.getElementById("messages").appendChild(msg);
-
-    //прокрутка диалога вниз
-    const messagesDiv = document.getElementById("messages");
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-
+    renderMessage(message, userId, chatId);
 });
+
+connection.on("CreatedChat", async (newChatId) =>
+{
+    console.log("Сервер создал чат  с id:", newChatId);
+    // Обновляем список чатов
+    await renderChatList();
+
+    if (localStorage.getItem('receiverId'))//условие для sender
+    {
+        handleChatButtonClick(newChatId);//делаем кнопку нового чата активной
+        localStorage.removeItem('receiverId');
+        localStorage.setItem('currentChatId', newChatId);//сохраняем id нового созданного чата, чтобы он сразу открылся
+    }
+
+    // Снимаем блокировку и обрабатываем отложенные сообщения
+    isChatCreating = false;
+    processPendingMessages();
+});
+
+function processPendingMessages() {
+    while (pendingMessages.length > 0) {
+        const { message, userId, chatId } = pendingMessages.shift();
+        renderMessage(message, userId, chatId);
+    }
+}
 
 //дожидаемся загрузки страницы, только потом загружаем список чатов
 document.addEventListener('DOMContentLoaded', async function ()
 {
-    await loadUserChats();
+    // Проверяем наличие токена авторизации
+    const token = localStorage.getItem('authToken');
+
+    if (!token) {
+        // Если токена нет, перенаправляем на страницу логина
+        window.location.href = 'login.html';
+        return;
+    }
+
+    await renderChatList();
     await loadUserName();
 
     await startConnection();
-
-   /* // После подключения — присоединяемся ко всем чатам пользователя
-    const tokenUserId = localStorage.getItem('authToken');
-    const response = await fetch(`/Chats/user/${tokenUserId}`);
-    const chats = await response.json();
-
-    for (const chat of chats) {
-        try {
-            await connection.invoke("JoinChat", { userId: Number(tokenUserId), chatId: Number(chat.id) });
-            console.log("Подключен к чату:", chat.name);
-        } catch (err) {
-            console.error("Ошибка JoinChat при старте:", err);
-        }
-    }*/
 
     // Открываем сохраненный чат после небольшой задержки
     setTimeout(() => {
@@ -118,50 +120,83 @@ let skip = 0;// для истории сообщений
 
 async function loadUserName()
 {
-    const tokenUserId = localStorage.getItem("authToken");
+    const currentUserId = localStorage.getItem("authToken");
 
-    const response = await fetch(`/User/${tokenUserId}`);
+    const response = await fetch(`/User/by-id/${currentUserId}`);
     const userName = await response.text();
 
     console.log("currentUserName:", userName);
 
-    const currentUserName = document.getElementById("userName");
-    currentUserName.innerText = userName;
+    const userNameEl = document.getElementById("userName");
+    userNameEl.innerText = userName;
 }
 
-async function loadChatName()
-{
-    const chatId = localStorage.getItem("currentChatId");
-
-    const response = await fetch(`/Chats/${chatId}`);
-    const chatName = await response.json();
-
-    console.log("currentChatName:", chatName.name);
-
-    const currentChatName = document.getElementById("chat-title");
-    currentChatName.innerText = chatName.name;
-}
-
+let chatsCashe = null;
 // Загрузка списка чатов пользователя
-async function loadUserChats() {
+async function renderChatList() {
     try {
         // Проверяем авторизацию при загрузке чатов
         const tokenUserId = localStorage.getItem('authToken');
 
-        if (!tokenUserId) {
-            window.location.href = 'login.html';
-            return;
-        }
-
         const response = await fetch(`/Chats/user/${tokenUserId}`);
         const chats = await response.json();
-        
-        displayChats(chats);
 
+        chatsCashe = chats;
+
+        displayChats(chats);
     } catch (error) {
         console.error('Ошибка загрузки чатов:', error);
         alert('Не удалось загрузить чаты');
     }
+    
+    //триггерим событие после полной отрисовки для навешивания отметки непрочитанности
+   // document.dispatchEvent(new Event("chatListRendered"));
+}
+
+function renderMessage(message, userId, chatId)
+{
+    const currentChatId = localStorage.getItem('currentChatId');
+    console.log("renderMessage on ChatId перед непрочитанными смс:", currentChatId);
+
+    if (chatId != currentChatId || !currentChatId) {
+        console.log("Сообщение для другого чата, игнорируем");
+        const chatButton = document.getElementById(chatId);
+        if (chatButton) {
+            chatButton.classList.add("unread");
+        }
+        return;
+    }
+
+    const msg = document.createElement("div");
+    msg.textContent = message;
+    msg.classList.add("message");
+
+    const currentUserId = localStorage.getItem('authToken');
+
+    // Определяем, кто отправил сообщение
+    if (userId == currentUserId) {
+        msg.classList.add("from-self");
+    } else {
+        msg.classList.add("from-others");
+    }
+
+    document.getElementById("messages").appendChild(msg);
+
+    //прокрутка диалога вниз
+    const messagesDiv = document.getElementById("messages");
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+async function loadChatName()
+{
+    const currentChatId = localStorage.getItem("currentChatId");
+
+    const chat = chatsCashe.find(c => c.id == currentChatId);
+
+    console.log("currentChatName:", chat.displayName);
+
+    const chatNameEl = document.getElementById("chat-title");
+    chatNameEl.innerText = chat.displayName;
 }
 
 // Отображение списка чатов
@@ -180,7 +215,7 @@ function displayChats(chats) {
         const chatButton = document.createElement("button");
          chatButton.className = 'chat-button';
        // chatButton.classList.add('chat-button');
-        chatButton.textContent = chat.name;
+        chatButton.textContent = chat.displayName;
         chatButton.id = chat.id;
         chatButton.onclick = () => openChat(chat.id);
 
@@ -189,8 +224,9 @@ function displayChats(chats) {
 }
 
 let activeButton = null; // глобальная переменная для отслеживания активной кнопки
-function handleChatButtonClick(chatId)
+async function handleChatButtonClick(chatId)
 {
+    console.log("handleChatButtonClick for chatId:", chatId);
     const chatButton = document.getElementById(chatId);
 
     // Если раньше была активная кнопка — возвращаем ей работоспособность
@@ -211,7 +247,10 @@ function handleChatButtonClick(chatId)
 // Открытие конкретного чата
 async function openChat(chatId)
 {
+    console.log("openChat with id:", chatId);
     localStorage.setItem('currentChatId', chatId);
+
+    localStorage.removeItem('receiverId');//удаляем receiverId при открытии существующего чата, чтобы не ломал поведение программы
 
     await loadChatName();
     
@@ -236,44 +275,60 @@ async function openChat(chatId)
     handleChatButtonClick(chatId);
 }
 
+// открытие чата с новым пользователем
+async function openNewChat(userName)
+{
+    console.log("openChat without id:");
+
+    const chatNameEl = document.getElementById("chat-title");
+    chatNameEl.innerText = userName;
+   // localStorage.setItem('currentChatId', chatId);
+
+    //await loadChatName();
+
+    const messages = document.getElementById("messages");
+    messages.innerHTML = ''; // очищаем окно сообщений при открытии нового чата
+
+    skip = 0; // при переходе в другой чат, сбрасываем счетчик пропуска сообщений для истории
+    console.log("Reset skip to:", skip);
+
+   // hasMoreMessages = true; // сбрасываем флаг наличия сообщений
+    //isLoading = false; // сбрасываем флаг загрузки
+
+    const chat = document.getElementById("chat");
+    chat.classList.add("show");
+
+   // const chatButton = document.getElementById(chatId);
+    //if (chatButton) chatButton.classList.remove("unread"); // убираем отметку непрочитанности при открытии чата
+
+    //joinChat();
+
+   // handleChatButtonClick(chatId);
+}
+
 // Выход
 function logout()
 {
     localStorage.removeItem('authToken');//userId
     localStorage.removeItem('currentChatId');
+    localStorage.removeItem('receiverId');
+    localStorage.removeItem('theme');
+
     window.location.href = 'login.html';
 }
 
-//функционал определенного чата
-
-
-
-// Проверяем авторизацию при загрузке чата
-/*document.addEventListener('DOMContentLoaded', async function () {
-    const token = localStorage.getItem('authToken');
-
-    if (!token) {
-        // Если токена нет, перенаправляем на страницу логина
-        window.location.href = 'login.html';
-        return;
-    }
-    await connection.start()
-        .catch(err => console.error(err.toString()));//нужен await для ожидания подключения к хабу
-
-    joinChat();
-});*/
 
 //Отображает что подключился новый участник к чату
 async function joinChat()
 {
     //глобальные переменные 
-    currentChat = localStorage.getItem('currentChatId');
-    currentUser = localStorage.getItem('authToken'); // временно, токен - это userId
+   const currentChatId = localStorage.getItem('currentChatId');
+   const currentUserId = localStorage.getItem('authToken'); // временно, токен - это userId
 
-    console.log("Подключаемся к чату ChatId:", currentChat);
-    console.log("Пользователь id:", currentUser);
+    console.log("Подключаемся к чату ChatId:", currentChatId);
+    console.log("Пользователь id:", currentUserId);
 
-    if (!currentChat) return;
+    if (!currentChatId) return;
 
     // Ждем подключения если нужно
     if (connection.state !== signalR.HubConnectionState.Connected)
@@ -282,14 +337,14 @@ async function joinChat()
         await startConnection();
     }
 
-    const userId = Number(currentUser);
-    const chatId = Number(currentChat);
+    const userId = Number(currentUserId);
+    const chatId = Number(currentChatId);
     const payload = { userId, chatId };
     console.log("Отправляем в  JoinChat:", payload);
 
     try {
         await connection.invoke("JoinChat", payload);
-        await loadChatHistory(currentChat);
+        await loadChatHistory(currentChatId);
     } catch (err) {
         console.error("Ошибка JoinChat:", err);
         // Пробуем еще раз через секунду
@@ -298,17 +353,36 @@ async function joinChat()
 }
 
 //Отправляем сообщение на сервер
-function sendMessage() {
+ async function sendMessage() {
     const message = document.getElementById("messageInput").value.trim();
     console.log("Отправляем сообщение на сервер:", message);
 
-    if (message) {
-        const userId = Number(currentUser);
-        const chatId = Number(currentChat);
+    if (message)
+    {
+        let chatId = Number(localStorage.getItem('currentChatId'));
+        const senderId = Number(localStorage.getItem('authToken'));
+        const receiverId = Number(localStorage.getItem('receiverId'));
 
-        const payload = { userId, chatId };
-        connection.invoke("SendMessage", payload, message)
-            .catch(err => console.error(err.toString()));
+        if (receiverId) {
+            chatId = 0; //если есть receiverId, значит чат новый, и chatId не нужен
+            console.log("Новый чат с пользователем receiverId:", receiverId);
+
+            // Устанавливаем флаг создания чата
+            isChatCreating = true;
+        }
+
+        const payload = { userId: senderId, chatId: chatId };
+
+        //получаем chatId новый или существующий
+        const returnedChatId = await connection.invoke("SendMessage", payload, receiverId, message);
+        console.log(" returnedChatId:", returnedChatId);
+
+        //сохраняем сразу chatId чтобы потом методы/events точно получили актуальный id
+        if (returnedChatId) {
+            localStorage.setItem('currentChatId', String(returnedChatId));
+            console.log("sendMessage new chatId:", returnedChatId);
+            localStorage.removeItem('receiverId');
+        }
 
         document.getElementById("messageInput").value = "";
     }
@@ -322,7 +396,7 @@ let n = 0; //счетчик для отладки
 let isLoading = false; // Флаг для отслеживания загрузки
 let hasMoreMessages = true; // Флаг для отслеживания наличия сообщений
 
-async function loadChatHistory(currentChat)
+async function loadChatHistory(currentChatId)
 {
     // Защита от множественных одновременных вызовов
     if (isLoading || !hasMoreMessages)
@@ -334,8 +408,8 @@ async function loadChatHistory(currentChat)
     console.log("loadChatHistory called", n );
     const messagesBox = document.getElementById("messages"); // контейнер для сообщений
     try {
-        const res = await fetch(`/Messages/${currentChat}?skip=${skip}`);
-        const messages = await res.json();
+        const response = await fetch(`/Messages/${currentChatId}?skip=${skip}`);
+        const messages = await response.json();
 
         console.log("history", messages);//проверка что приходит
 
@@ -357,12 +431,13 @@ async function loadChatHistory(currentChat)
 
         messages.forEach(msg => {
             const messageDiv = document.createElement("div");
-            messageDiv.textContent = `${msg.userName}: ${msg.body}`;
+            messageDiv.textContent = msg.body;
             messageDiv.classList.add("message");
 
+            const currentUserId = localStorage.getItem('authToken'); 
 
             // стили для "своих" и "чужих" сообщений
-            if (currentUser == msg.userId) {
+            if (currentUserId == msg.userId) {
                 messageDiv.classList.add("from-self");
             }
             else {
@@ -395,8 +470,10 @@ async function loadChatHistory(currentChat)
 // подписка на скролл (загрузка при прокрутке вверх)
 document.getElementById("messages").addEventListener("scroll", () => {
     const messagesBox = document.getElementById("messages");
-    if (messagesBox.scrollTop === 0) {
-        loadChatHistory(currentChat);
+    if (messagesBox.scrollTop === 0)
+    {
+        const currentChatId = localStorage.getItem('currentChatId');
+        loadChatHistory(currentChatId);
     }
 });
 
@@ -411,6 +488,8 @@ function openModal(modal) {
 function closeModal(modal) {
     modal.classList.remove("show");
     modal.style.display = "none";
+
+    modal.querySelectorAll("input").forEach(input => input.value = "");
 }
 
 // Обработчик для открытия модалок
@@ -439,7 +518,7 @@ window.addEventListener("click", (e) => {
 
 //---------------функционал для создания нового чата---------------------------------
 // Создание нового чата
-async function createNewChat()
+/*async function createNewChat()
 {
     const chatName = document.getElementById("chatNameInput").value.trim();
    // const isGroup = document.getElementById("isGroupCheckbox").checked;
@@ -489,49 +568,55 @@ async function createNewChat()
 
 const submitChatBtn = document.getElementById("submitChatBtn");
 //навешиваем обработчик на кнопку создания чата
-submitChatBtn.addEventListener("click", createNewChat);
+submitChatBtn.addEventListener("click", createNewChat);*/
 
 
-//---------------функционал для поиска чата--------------------------------
-async function findChat()
+//---------------функционал для поиска другого пользователя--------------------------------
+async function findUser()
 {
-    const chatName = document.getElementById("findChatNameInput").value.trim();
-    console.log("Ищем чат по имени:", chatName);
+    const userNameInput = document.getElementById("findUserNameInput");
+    userName = userNameInput.value.trim();
+    console.log("Ищем user по имени:", userName);
 
-    if (!chatName)
+    if (!userName)
     {
-        alert("Введите название чата");
+        alert("Введите имя пользователя");
         return;
     }
+
     try
     {
-        const response = await fetch(`/Chats/by-name/${encodeURIComponent(chatName)}`);
+        const response = await fetch(`/User/by-name/${encodeURIComponent(userName)}`);
 
         if (!response.ok)
         {
             if (response.status === 404)
             {
-                alert("Чат не найден");
+                alert("Пользователь не найден");
                 return;
             }
             throw new Error(`Ошибка: ${response.status}`);
         }
 
-        const chat = await response.json();
-        console.log("Найден чат:", chat.name);
+        const foundUser = await response.json();
+        localStorage.setItem('receiverId', foundUser.receiverId);
+        console.log("Найден user:", foundUser);
 
-        // Открываем найденный чат
-        openChat(chat.id);
+        // Открываем чат c найденным пользователем
+        openNewChat(foundUser.userName);
         // Закрываем окно после поиска
         findChatModal.style.display = "none";
         findChatModal.classList.remove("show");
 
+        userNameInput.value = "";
+
         // Обновляем список чатов
-        const tokenUserId = localStorage.getItem('authToken');
-        const userId = Number(tokenUserId);
-        const chatId = Number(chat.id);
-        console.log("Добавляем пользователя в чат: userId:", userId, "chatId:", chatId);
-        const responseListChats = await fetch(`/Chats/${chatId}/add-user/${userId}`,
+      //  const tokenUserId = localStorage.getItem('authToken');
+        //const userId = Number(tokenUserId);
+        //const chatId = Number(chat.id);
+
+              //перепроверить надо
+      /*  const responseListChats = await fetch(`/Chats/${chatId}/add-user/${userId}`,
             {
                 method: 'POST',
                 headers:
@@ -539,20 +624,20 @@ async function findChat()
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({}) 
-            });
+            });*/
 
     }
     catch (err)
     {
         console.error("Не удалось найти чат:", err);
-        alert("Ошибка при поиске чата, попробуйте снова.");
+        alert("Чат не найден");
     }
 
-    window.location.reload();
+   // window.location.reload();
 }
 
 const searchChatBtn = document.getElementById("searchChatBtn");
 //навешиваем обработчик на кнопку поиска чата
-searchChatBtn.addEventListener("click", findChat);
+searchChatBtn.addEventListener("click", findUser);
 
 

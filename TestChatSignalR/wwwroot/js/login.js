@@ -66,10 +66,9 @@ regUserBtn.addEventListener("click", function () {
     regUserModal.classList.add("show");
 });
 
-closeModal.addEventListener("click", () => {
+document.querySelector(".close-modal").addEventListener("click", function () {
     regUserModal.classList.remove("show");
     regUserModal.style.display = "none"; // закрытие по крестику
-
     const inputs = regUserModal.querySelectorAll("input");
     inputs.forEach(input => input.value = "");
 });

@@ -18,7 +18,9 @@ namespace TestChatSignalR.Repositories
         {
             var chats = await _dbContext.Users
                 .Where(u => u.Id == userId)
-                .SelectMany(u=>u.Chats)
+                .SelectMany(u => u.ChatsAsUser1.Concat(u.ChatsAsUser2))
+                .Include(c => c.User1)
+                .Include(c => c.User2)
                 .ToListAsync();
 
             return chats;
@@ -31,12 +33,12 @@ namespace TestChatSignalR.Repositories
             return chat;
         }
 
-        public async Task<Chat> GetByNameAsync(string chatName)
+       /* public async Task<Chat> GetByNameAsync(string chatName)
         {
             Chat chat = await _dbContext.Chats
                 .FirstOrDefaultAsync(c => c.Name == chatName) ?? throw new InvalidOperationException($"Chat with name {chatName} not found.");
             return chat;
-        }
+        }*/
 
         public async Task Add(Chat chat)
         {

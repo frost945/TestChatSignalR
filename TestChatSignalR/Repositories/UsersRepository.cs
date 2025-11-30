@@ -29,5 +29,12 @@ namespace TestChatSignalR.Repositories
                 .FirstAsync(u => u.Id == userId) ?? throw new InvalidOperationException($"User with id {userId} not found.");
             return user;
         }
+
+        public async Task<User> GetByNameAsync(string userName)
+        {
+            User user = await _dbContext.Users
+                .FirstOrDefaultAsync(u => u.UserName == userName) ?? throw new InvalidOperationException($"User with name {userName} not found.");
+            return user;
+        }
     }
 }

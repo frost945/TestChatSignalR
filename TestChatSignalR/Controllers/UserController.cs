@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using TestChatSignalR.Interfaces;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using TestChatSignalR.Contracts;
+using TestChatSignalR.Interfaces;
 
 namespace TestChatSignalR.Controllers
 {
@@ -16,25 +17,31 @@ namespace TestChatSignalR.Controllers
             _usersRepository = usersRepository;
         }
 
-        [HttpGet("{userId}")]
+        [HttpGet("by-id/{userId}")]
         public async Task<IActionResult> GetUserById(int userId)
         {
             var user =  await _usersRepository.GetByIdAsync(userId);
-            return Ok(user.Name);
+
+            return Ok(user.UserName);
+        }
+
+        [HttpGet("by-name/{userName}")]
+        public async Task<IActionResult> GetUserByName(string userName)
+        {
+            var user = await _usersRepository.GetByNameAsync(userName);
+
+            UserReceiverResponse response= new UserReceiverResponse (user.Id, user.UserName);
+
+            return Ok(response);
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterUserRequest request)
         {
-            try
-            {
-                await _usersService.RegisterAsync(request);
-                return Ok("Registration successful");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"Registration failed: {ex.Message}");
-            }
+
+            await _usersService.RegisterAsync(request);
+
+            return Ok("Registration successful");
         }
 
         [HttpPost("login")]

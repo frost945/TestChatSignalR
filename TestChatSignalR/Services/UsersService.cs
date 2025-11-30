@@ -1,5 +1,6 @@
-﻿using TestChatSignalR.Interfaces;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
 using TestChatSignalR.Contracts;
+using TestChatSignalR.Interfaces;
 using TestChatSignalR.Models;
 
 namespace TestChatSignalR.Services
@@ -13,8 +14,15 @@ namespace TestChatSignalR.Services
         }
         public async Task RegisterAsync(RegisterUserRequest request)
         {
-            var user = new User(request.UserName, request.Email, request.Password);
-            await _usersRepository.CreateAsync(user);
+            try
+            {
+                var user = new User(request.UserName, request.Email, request.Password);
+                await _usersRepository.CreateAsync(user);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new ArgumentException($"Registration failed: {ex.Message}");
+            }
         }
 
         public async Task<string> LoginAsync(LoginUserRequest request)

@@ -6,7 +6,7 @@ namespace TestChatSignalR.Interfaces
     {
         public Task<IEnumerable<Chat>> GetByUserId(int userId);
         public Task<Chat> GetByIdAsync(int chatId);
-        public Task<Chat> GetByNameAsync(string chatName);
+      // public Task<Chat> GetByNameAsync(string chatName);
         public Task Add(Chat chat);
     }
 }

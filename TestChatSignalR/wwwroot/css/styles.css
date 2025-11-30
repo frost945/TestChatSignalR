@@ -129,7 +129,7 @@
         background-color: var(--bgColor-loginButton-hover);
         box-shadow: var(--shadow-loginButton-hover);
     }
-    #login-button:focus {
+    #login-button:focus, #sendMessage-button:focus {
         outline: none;
         box-shadow: var(--shadow-loginInput-focus);
         background-color: var(--bgColor-loginButton-hover);
@@ -304,9 +304,6 @@
     color: #f1f1f1;
     border: 1px solid #ff69b4;
 }
-/*.dark-mode #chats-list {
-    border: 1px solid #ff69b4;
-}*/
 
 /* Системные кнопки */
 .dark-mode .system-button {
@@ -333,9 +330,9 @@
     }
 
 .dark-mode .active-chatButton {
-    background: #dd2882;
-    border: none;
-   //border: 1px solid #ff69b4;
+  //  background: #dd2882;
+   // border: none;
+   border: 1px solid #ff69b4;
 }
 
 /* Сообщение об отсутствии чатов */
